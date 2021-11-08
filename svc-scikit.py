@@ -65,8 +65,8 @@ startTest = time.time()
 svcPreds = svc.score(testX, testY)
 stopTest = time.time()
 svcTestingTime = stopTest-startTest
-print("SVC Testing Time:", svcTestingTime)
-print("SVC Accuracy:", svcPreds)
+print("SVC Testing Time: ", svcTestingTime)
+print("SVC Accuracy:     ", svcPreds)
 print("")
 
 logreg = LogisticRegression()
@@ -81,7 +81,7 @@ print("LogReg Training Time:", logregTrainingTime)
 # testing
 startTest = time.time()
 logregPreds = logreg.score(testX, testY)
-stopTraining = time.time()
-logregTestingTime = stopTraining-startTraining
-print("LogReg Testing  Time:", logregTestingTime)
-print("LogReg Accuracy:", logregPreds)
+stopTest = time.time()
+logregTestingTime = stopTest-startTest
+print("LogReg Testing Time: ", logregTestingTime)
+print("LogReg Accuracy:     ", logregPreds)
