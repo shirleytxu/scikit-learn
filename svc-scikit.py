@@ -7,6 +7,7 @@ from sklearn import preprocessing
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
 
 df = pd.read_csv('breastcancerdataset.csv')
 df = df.loc[:, ~df.columns.str.contains('^Unnamed')]
@@ -69,6 +70,7 @@ print("SVC Testing Time: ", svcTestingTime)
 print("SVC Accuracy:     ", svcPreds)
 print("")
 
+# logistic regression network
 logreg = LogisticRegression()
 
 # training
@@ -85,3 +87,23 @@ stopTest = time.time()
 logregTestingTime = stopTest-startTest
 print("LogReg Testing Time: ", logregTestingTime)
 print("LogReg Accuracy:     ", logregPreds)
+print("")
+
+# kneighborsclassifier
+kneighclassifier = KNeighborsClassifier()
+
+# training
+startTraining = time.time()
+kneighclassifier.fit(trainX, trainY.values.ravel())
+stopTraining = time.time()
+kneighTrainingTime = stopTraining-startTraining
+print("KNeighborsClassifier Training Time:", kneighTrainingTime)
+
+# testing
+startTest = time.time()
+kneighPreds = kneighclassifier.score(testX, testY)
+stopTest = time.time()
+kneighTestingTime = stopTest-startTest
+print("KNeighborsClassifier Testing Time: ", kneighTestingTime)
+print("KNeighborsClassifier Accuracy:     ", kneighPreds)
+
