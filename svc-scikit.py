@@ -1,7 +1,6 @@
 import time
 import pandas as pd
-from sklearn.metrics import plot_confusion_matrix, confusion_matrix, \
-    ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from sklearn.svm import SVC
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler
@@ -25,7 +24,6 @@ def evaluateModel(model, modelName, trainX, trainY, testX, testY):
     model.fit(trainX, trainY)
     stopTraining = time.time()
     trainingTime = stopTraining - startTraining
-    print(modelName, " Training Time:", trainingTime)
 
     startTest = time.time()
     preds = model.predict(testX)
@@ -34,18 +32,14 @@ def evaluateModel(model, modelName, trainX, trainY, testX, testY):
 
     accuracy = model.score(testX, testY)
 
-    print(modelName, " Testing Time: ", testingTime)
-    print(modelName, " Accuracy: ", accuracy)
-    print("")
-
     confusionMatrix = confusion_matrix(testY, preds, labels=["B", "M"])
     display = ConfusionMatrixDisplay(confusion_matrix=confusionMatrix,
                                      display_labels=model.classes_)
     display.plot()
-    plt.title(modelName + " Neural Network Confusion Matrix")
-    plt.show()
+    plt.title(modelName + " Confusion Matrix (Close to Continue)")
+    plt.show(block=True)
 
-    return trainingTime, testingTime, confusionMatrix, accuracy
+    return modelName, trainingTime, testingTime, accuracy
 
 # reads in dataset
 df = pd.read_csv('breastcancerdataset.csv')
@@ -81,28 +75,22 @@ xAxis = df.loc[:,['radius_mean']]
 plt.hist(xAxis)
 plt.ylabel("Probability")
 plt.xlabel("Radius Mean")
-plt.title("Radius Mean Histogram")
-plt.show(block=False)
-plt.pause(2)
-plt.close()
+plt.title("Radius Mean Histogram (Close to Continue)")
+plt.show(block=True)
 
 xAxis = df.loc[:,['texture_mean']]
 plt.hist(xAxis)
 plt.ylabel("Probability")
 plt.xlabel("Texture Mean")
-plt.title("Texture Mean Histogram")
-plt.show(block=False)
-plt.pause(2)
-plt.close()
+plt.title("Texture Mean Histogram (Close to Continue)")
+plt.show(block=True)
 
 xAxis = df.loc[:,['perimeter_mean']]
 plt.hist(xAxis)
 plt.ylabel("Probability")
 plt.xlabel("Perimeter Mean")
-plt.title("Perimeter Mean Histogram")
-plt.show(block=False)
-plt.pause(2)
-plt.close()
+plt.title("Perimeter Mean Histogram (Close to Continue)")
+plt.show(block=True)
 
 # svc network
 svc = SVC(verbose=0, max_iter=10000)
@@ -117,3 +105,14 @@ logregResults = evaluateModel(logreg, "Logistic Regression", trainX, trainY,
 kneighclassifier = KNeighborsClassifier()
 kneighResults = evaluateModel(kneighclassifier, "K Neighbors Classifier",
                               trainX, trainY, testX, testY)
+
+# compile all neural network statistics
+networkResults = [svcResults, logregResults, kneighResults]
+
+# create statistic in dataframe to print with table-like appearance
+networkTable = pd.DataFrame(networkResults,
+                            columns=["Network", "Training Time",
+                                     "Testing Time", "Accuracy"])
+
+print("Result Comparison: ")
+print(networkTable)
