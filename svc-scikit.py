@@ -9,6 +9,44 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 
+
+def evaluateModel(model, modelName, trainX, trainY, testX, testY):
+    """
+    :param model: neural network model object
+    :param modelName: neural network name (string)
+    :param trainX: training data input
+    :param trainY: training data answers
+    :param testX: testing data input
+    :param testY: testing data answers
+    :return: trainingTime, testingTime, confusionMatrix, accuracy
+    """
+    # training
+    startTraining = time.time()
+    model.fit(trainX, trainY)
+    stopTraining = time.time()
+    trainingTime = stopTraining - startTraining
+    print(modelName, " Training Time:", trainingTime)
+
+    startTest = time.time()
+    preds = model.predict(testX)
+    stopTest = time.time()
+    testingTime = stopTest - startTest
+
+    accuracy = model.score(testX, testY)
+
+    print(modelName, " Testing Time: ", testingTime)
+    print(modelName, " Accuracy: ", accuracy)
+    print("")
+
+    confusionMatrix = confusion_matrix(testY, preds, labels=["B", "M"])
+    display = ConfusionMatrixDisplay(confusion_matrix=confusionMatrix,
+                                     display_labels=model.classes_)
+    display.plot()
+    plt.title(modelName + " Neural Network Confusion Matrix")
+    plt.show()
+
+    return trainingTime, testingTime, confusionMatrix, accuracy
+
 # reads in dataset
 df = pd.read_csv('breastcancerdataset.csv')
 
@@ -38,7 +76,6 @@ scaler = MinMaxScaler()
 trainX = scaler.fit_transform(trainX)
 testX = scaler.fit_transform(testX)
 
-"""
 # visualize some parameters of data
 xAxis = df.loc[:,['radius_mean']]
 plt.hist(xAxis)
@@ -66,67 +103,17 @@ plt.title("Perimeter Mean Histogram")
 plt.show(block=False)
 plt.pause(2)
 plt.close()
-"""
 
 # svc network
 svc = SVC(verbose=0, max_iter=10000)
-
-# training
-startTraining = time.time()
-svc.fit(trainX, trainY)
-stopTraining = time.time()
-svcTrainingTime = stopTraining-startTraining
-print("SVC Training Time:", svcTrainingTime)
-
-startTest = time.time()
-svcPreds = svc.predict(testX)
-stopTest = time.time()
-svcTestingTime = stopTest-startTest
-
-svcConfusionMatrix = confusion_matrix(testY, svcPreds, labels=["B", "M"])
-display = ConfusionMatrixDisplay(confusion_matrix=svcConfusionMatrix, display_labels=svc.classes_)
-display.plot()
-plt.title("SVC Neural Network Confusion Matrix")
-plt.show()
-
-print("SVC Testing Time: ", svcTestingTime)
-print("SVC Accuracy:     ", svcPreds)
-print("")
+svcResults = evaluateModel(svc, "SVC", trainX, trainY, testX, testY)
 
 # logistic regression network
 logreg = LogisticRegression()
-
-# training
-startTraining = time.time()
-logreg.fit(trainX, trainY)
-stopTraining = time.time()
-logregTrainingTime = stopTraining-startTraining
-print("LogReg Training Time:", logregTrainingTime)
-
-# testing
-startTest = time.time()
-logregPreds = logreg.score(testX, testY)
-stopTest = time.time()
-logregTestingTime = stopTest-startTest
-print("LogReg Testing Time: ", logregTestingTime)
-print("LogReg Accuracy:     ", logregPreds)
-print("")
+logregResults = evaluateModel(logreg, "Logistic Regression", trainX, trainY,
+                              testX, testY)
 
 # kneighborsclassifier
 kneighclassifier = KNeighborsClassifier()
-
-# training
-startTraining = time.time()
-kneighclassifier.fit(trainX, trainY)
-stopTraining = time.time()
-kneighTrainingTime = stopTraining-startTraining
-print("KNeighborsClassifier Training Time:", kneighTrainingTime)
-
-# testing
-startTest = time.time()
-kneighPreds = kneighclassifier.score(testX, testY)
-stopTest = time.time()
-kneighTestingTime = stopTest-startTest
-print("KNeighborsClassifier Testing Time: ", kneighTestingTime)
-print("KNeighborsClassifier Accuracy:     ", kneighPreds)
-
+kneighResults = evaluateModel(kneighclassifier, "K Neighbors Classifier",
+                              trainX, trainY, testX, testY)
